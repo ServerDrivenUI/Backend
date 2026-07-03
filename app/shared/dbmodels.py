@@ -19,6 +19,7 @@ class ClothesItem(Document):
 
     price: int
     name: str
+    descripton: str
 
     class Settings:
         name = "clothes_items"
