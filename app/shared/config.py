@@ -35,6 +35,7 @@ class DebugConfig(BaseConfig):
     """
     Development configuration environment containing Swagger documentation and extended logging.
     """
+
     CONFIG: str = "DEBUG"
 
     def special_init_fastapi(self, app: FastAPI, db):
@@ -42,7 +43,7 @@ class DebugConfig(BaseConfig):
         Sets up the application in debug mode, modifying Swagger schema and active logging structures.
         """
         super().special_init_fastapi(app, db)
-        
+
         print("Swagger on localhost:5200/docs")
 
         CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -63,6 +64,9 @@ class DebugConfig(BaseConfig):
                 logging.StreamHandler(),
             ],
         )
+        logging.getLogger("pymongo").setLevel(logging.WARNING)
+        logging.getLogger("pymongo.topology").setLevel(logging.WARNING)
+        logging.getLogger("motor").setLevel(logging.WARNING)
         print("Logs on backend/logs/")
 
 
@@ -70,6 +74,7 @@ class ProductConfig(BaseConfig):
     """
     Production configuration environment optimized for stable system deployment.
     """
+
     CONFIG: str = "PRODUCT"
 
     def special_init_fastapi(self, app: FastAPI, db):
