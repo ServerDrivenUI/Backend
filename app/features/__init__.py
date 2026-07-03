@@ -1,1 +1,3 @@
-from .test_rout import test_route
+from .test_rout.route import test_route
+
+routes = [test_route]

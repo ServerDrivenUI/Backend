@@ -13,6 +13,11 @@ load_dotenv()
 from contextlib import asynccontextmanager
 
 
+def register_routes(app: FastAPI, routes: list):
+    for r in routes:
+        app.include_router(r)
+
+
 def create_app() -> FastAPI:
 
     @asynccontextmanager
@@ -46,8 +51,8 @@ def create_app() -> FastAPI:
     )
 
     from .shared import dbmodels
-    from .features import test_route
+    from .features import routes
 
-    app.include_router(test_route)
+    register_routes(app, routes)
 
     return app
