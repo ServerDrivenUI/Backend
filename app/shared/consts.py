@@ -1,5 +1,3 @@
-JWT_ACCESS_TOKEN_EXPIRES = 10
-
 SDUI_TEMPLATES = {
     "templates": {
         "_template_close": {

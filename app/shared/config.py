@@ -1,11 +1,9 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from datetime import timedelta
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from fastapi import FastAPI
-from app.shared.consts import JWT_ACCESS_TOKEN_EXPIRES
 
 load_dotenv()
 
@@ -15,11 +13,11 @@ class BaseConfig(BaseSettings):
     Base configuration class managing core application environment settings.
     """
 
-    SQLALCHEMY_DATABASE_URI: str = os.getenv(
+    DATABASE_URI: str = os.getenv(
         "DATABASE_URI", "mongodb://localhost:27017/my_database"
     )
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "3xvX3jfKiSOoFFGVcIM5Hkd9o")
-    JWT_ACCESS_TOKEN_EXPIRES_DAYS: int = JWT_ACCESS_TOKEN_EXPIRES
+    JWT_ACCESS_TOKEN_EXPIRES_DAYS: int = os.getenv("JWT_ACCESS_TOKEN_EXPIRES", "10")
     APP_NAME: str = os.getenv("APP_NAME", "SDCV API")
     CONFIG: str = "DEBUG"
 
@@ -27,8 +25,7 @@ class BaseConfig(BaseSettings):
         """
         Initializes core base application components for FastAPI.
         """
-        app.state.jwt_secret_key = self.JWT_SECRET_KEY
-        app.state.jwt_expires = timedelta(days=self.JWT_ACCESS_TOKEN_EXPIRES_DAYS)
+        pass
 
 
 class DebugConfig(BaseConfig):
