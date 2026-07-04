@@ -1,0 +1,14 @@
+from pydantic import BaseModel, Field
+from typing import List
+
+
+class PageRequest(BaseModel):
+    """Запрос, содержащий тип страницы"""
+
+    type: str = Field(
+        ...,
+        min_length=1,
+        examples=["main_market_page"],
+        description="Тип страницы в БД",
+    )
+    """Тип страницы"""

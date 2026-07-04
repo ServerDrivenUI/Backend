@@ -7,6 +7,7 @@ from app.shared.extensions import (
     db,
     main_config,
 )
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
@@ -34,6 +35,9 @@ def create_app() -> FastAPI:
             db.client.close()
 
     app = FastAPI(title="Server Driven UI", lifespan=lifespan)
+
+    app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+    print("Фото тестовое по http://localhost:5200/assets/clothes.jpg")
 
     config_const = os.getenv("CONFIG")
     config = config_factory(config_const)

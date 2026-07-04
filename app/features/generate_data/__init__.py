@@ -1,1 +1,1 @@
-from . import route
+from .route import generate_route

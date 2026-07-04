@@ -1,2 +1,2 @@
 """Регистрация роутов"""
-from . import route
+from .route import test_route
