@@ -93,4 +93,13 @@ class MainCreator(BaseCreator):
         return page_json, variables
 
 
-creators = [MainCreator()]
+class AuthCreator(BaseCreator):
+    page_type: str = "auth_page"
+
+    async def get_page(
+        self, page_json: Dict[str, Any]
+    ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        return page_json, []
+
+
+creators = [MainCreator(), AuthCreator()]

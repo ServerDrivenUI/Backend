@@ -1,10 +1,11 @@
 import logging
 from .repository import auth_repo
-from app.shared.extensions import main_config
 from datetime import datetime, timedelta, timezone
 import jwt
 import os
 from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class AuthService:
