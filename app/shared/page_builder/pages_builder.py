@@ -1,17 +1,23 @@
-from .repository import content_repo, ui_repo
+from .repository import content_repo, ui_repo, pages_repo
 import json
 import copy
 from app.shared.consts import GLOBAL_PHOTO, LOCAL_PHOTO
+from typing import Any, Dict, List, Tuple
+from .pages_creators import creators
 
 
 class PagesBuilder:
     """Собирает нужные страницы по их типу"""
 
-    async def build_main_market_page(self, page_json):
-        navbar_doc = await ui_repo.get_element_by_type("navbar")
-        if not navbar_doc:
-            raise ValueError("Элемент 'navbar' не найден в базе данных!")
-        navbar_template = json.loads(navbar_doc.json_dict)
+    async def build_page(
+        self, page_type: str
+    ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        page = await pages_repo.get_page_by_type(page_type)
+        if not page:
+            self.logger.error(f"Страница с типом '{page_type}' не найдена в базе данных")
+            return None
+
+        page_json = json.loads(page.json_dict)
 
         element_doc = await ui_repo.get_element_by_type("product_card")
         card_template = json.loads(element_doc.json_dict)
@@ -70,9 +76,19 @@ class PagesBuilder:
                 "Сетка с id='products_grid' не найдена в шаблоне страницы!"
             )
 
-        page_json["items"].insert(0, navbar_template)
+        page_json = await self._add_navbar(page_json)
 
         return page_json, variables
+
+    async def _add_navbar(self, page_json: Dict[str, Any]) -> Dict[str, Any]:
+        navbar_doc = await ui_repo.get_element_by_type("navbar")
+        if not navbar_doc:
+            raise ValueError("Элемент 'navbar' не найден в базе данных!")
+        navbar_template = json.loads(navbar_doc.json_dict)
+
+        page_json["items"].insert(0, navbar_template)
+
+        return page_json
 
 
 page_builder = PagesBuilder()

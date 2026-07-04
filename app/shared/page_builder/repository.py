@@ -1,4 +1,4 @@
-from app.shared.dbmodels import UIElement, ClothesItem
+from app.shared.dbmodels import UIElement, ClothesItem, Page
 
 
 class ContentRepository:
@@ -17,5 +17,13 @@ class UIElementsRepository:
         return element
 
 
+class PagesRepository:
+    """Работает с шаблонами страниц"""
+    async def get_page_by_type(self, type: str) -> Page | None:
+        page = await Page.find_one(Page.type == type)
+        return page
+
+
+pages_repo = PagesRepository()
 content_repo = ContentRepository()
 ui_repo = UIElementsRepository()
