@@ -23,19 +23,37 @@ class PagesBuilder:
 
         page_json, variables = await creator.get_page(page_json)
 
-        page_json = await self._add_navbar(page_json)
+        navbar_template = await self._add_navbar()
 
-        return page_json, variables
+        final_screen = await self._add_background(page_json, navbar_template)
 
-    async def _add_navbar(self, page_json: Dict[str, Any]) -> Dict[str, Any]:
+        return final_screen, variables
+
+    async def _add_navbar(self) -> Dict[str, Any]:
         navbar_doc = await ui_repo.get_element_by_type("navbar")
         if not navbar_doc:
             raise ValueError("Элемент 'navbar' не найден в базе данных!")
-        navbar_template = json.loads(navbar_doc.json_dict)
+        return json.loads(navbar_doc.json_dict)
 
-        page_json["items"].insert(0, navbar_template)
+    async def _add_background(
+        self, page_json: Dict[str, Any], navbar_template: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        background_doc = await ui_repo.get_element_by_type("background")
+        if not background_doc:
+            raise ValueError("Элемент 'background' не найден в базе данных!")
+        background_template = json.loads(background_doc.json_dict)
 
-        return page_json
+        content_doc = await ui_repo.get_element_by_type("content")
+        if not content_doc:
+            raise ValueError("Элемент 'content' не найден в базе данных!")
+        content_template = json.loads(content_doc.json_dict)
+
+        content_template["items"].insert(1, page_json)
+
+        background_template["items"].insert(0, navbar_template)
+        background_template["items"].insert(1, content_template)
+
+        return background_template
 
     def _get_creator(self, page_type: str) -> BaseCreator | None:
         """Определяет нужный создатель страницы"""
