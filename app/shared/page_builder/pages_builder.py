@@ -8,6 +8,11 @@ class PagesBuilder:
     """Собирает нужные страницы по их типу"""
 
     async def build_main_market_page(self, page_json):
+        navbar_doc = await ui_repo.get_element_by_type("navbar")
+        if not navbar_doc:
+            raise ValueError("Элемент 'navbar' не найден в базе данных!")
+        navbar_template = json.loads(navbar_doc.json_dict)
+
         element_doc = await ui_repo.get_element_by_type("product_card")
         card_template = json.loads(element_doc.json_dict)
 
@@ -47,7 +52,7 @@ class PagesBuilder:
                 {"name": price_var, "type": "string", "value": f"{c.price} ₽"}
             )
             variables.append(
-                {"name": image_var, "type": "string", "value": LOCAL_PHOTO}
+                {"name": image_var, "type": "string", "value": GLOBAL_PHOTO}
             )
             variables.append(
                 {"name": description_var, "type": "string", "value": c.descripton}
@@ -64,6 +69,8 @@ class PagesBuilder:
             raise ValueError(
                 "Сетка с id='products_grid' не найдена в шаблоне страницы!"
             )
+
+        page_json["items"].insert(0, navbar_template)
 
         return page_json, variables
 
