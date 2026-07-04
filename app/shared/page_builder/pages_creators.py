@@ -27,6 +27,12 @@ class MainCreator(BaseCreator):
         element_doc = await ui_repo.get_element_by_type("product_card")
         card_template = json.loads(element_doc.json_dict)
 
+        cart_btn_doc = await ui_repo.get_element_by_type("cart_button")
+        buy_btn_doc = await ui_repo.get_element_by_type("buy_button")
+
+        cart_btn_template = json.loads(cart_btn_doc.json_dict)
+        buy_btn_template = json.loads(buy_btn_doc.json_dict)
+
         cards_with_data = []
         variables = []
 
@@ -55,6 +61,9 @@ class MainCreator(BaseCreator):
 
                 elif element_id == "product_description_layer":
                     item["text"] = f"@{{{description_var}}}"
+
+                elif element_id == "product_buttons_container":
+                    item["items"] = [cart_btn_template, buy_btn_template]
 
             cards_with_data.append(local_card)
 
