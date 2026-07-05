@@ -12,9 +12,7 @@ class PagesBuilder:
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         page = await pages_repo.get_page_by_type(page_type)
         if not page:
-            self.logger.error(
-                f"Страница с типом '{page_type}' не найдена в базе данных"
-            )
+            print(f"Страница с типом '{page_type}' не найдена в базе данных")
             return None
 
         page_json = json.loads(page.json_dict)
@@ -32,7 +30,7 @@ class PagesBuilder:
     async def _add_navbar(self) -> Dict[str, Any]:
         navbar_doc = await ui_repo.get_element_by_type("navbar")
         if not navbar_doc:
-            raise ValueError("Элемент 'navbar' не найден в базе данных!")
+            print("Элемент 'navbar' не найден в базе данных!")
         return json.loads(navbar_doc.json_dict)
 
     async def _add_background(

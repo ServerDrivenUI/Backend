@@ -102,4 +102,77 @@ class AuthCreator(BaseCreator):
         return page_json, []
 
 
-creators = [MainCreator(), AuthCreator()]
+class CartCreator(BaseCreator):
+    page_type: str = "cart_page"
+
+    async def get_page(
+        self, page_json: Dict[str, Any]
+    ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        element_doc = await ui_repo.get_element_by_type("cart_element")
+        cart_template = json.loads(element_doc.json_dict)
+
+        cards_with_data = []
+        variables = []
+
+        clothes = await content_repo.get_all_clothes()
+
+        for c in clothes:
+            c_id = str(c.id)
+            local_card = copy.deepcopy(cart_template)
+
+            title_var = f"cart_title_{c_id}"
+            price_var = f"cart_price_{c_id}"
+            image_var = f"cart_img_{c_id}"
+            description_var = f"cart_description_{c_id}"
+
+            def update_elements(elements_list):
+                for item in elements_list:
+                    element_id = item.get("id")
+
+                    if element_id == "empty_title_layer":
+                        item["text"] = f"@{{{title_var}}}"
+                    elif element_id == "empty_image_layer":
+                        item["image_url"] = f"@{{{image_var}}}"
+                    elif element_id == "empty_subtitle_layer":
+                        item["text"] = f"@{{{price_var}}}"
+                    elif element_id == "empty_description_layer":
+                        item["text"] = f"@{{{description_var}}}"
+
+                    # Если у элемента есть свои внутренние items, спускаемся глубже
+                    if "items" in item:
+                        update_elements(item["items"])
+
+            # Запускаем поиск по всем элементам карточки
+            if "items" in local_card:
+                update_elements(local_card["items"])
+
+            cards_with_data.append(local_card)
+
+            variables.append({"name": title_var, "type": "string", "value": c.name})
+            variables.append(
+                {"name": price_var, "type": "string", "value": f"{c.price} ₽"}
+            )
+            variables.append(
+                {"name": image_var, "type": "string", "value": GLOBAL_PHOTO}
+            )
+            variables.append(
+                {"name": description_var, "type": "string", "value": c.descripton}  # Исправлена опечатка (description)
+            )
+
+        grid_found = False
+        for item in page_json["items"]:
+            if item.get("id") == "product_info_container":
+                item["items"] = cards_with_data
+                grid_found = True
+                break
+
+        if not grid_found:
+            raise ValueError(
+                "Сетка с id='product_info_container' не найдена в шаблоне страницы!"
+            )
+
+        return page_json, variables
+
+
+
+creators = [MainCreator(), AuthCreator(), CartCreator()]
