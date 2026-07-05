@@ -33,6 +33,14 @@ class MainCreator(BaseCreator):
         cart_btn_template = json.loads(cart_btn_doc.json_dict)
         buy_btn_template = json.loads(buy_btn_doc.json_dict)
 
+        title_doc = await ui_repo.get_element_by_type("product_title_layer")
+        price_doc = await ui_repo.get_element_by_type("product_price_layer")
+        description_doc = await ui_repo.get_element_by_type("product_description_layer")
+
+        title_template = json.loads(title_doc.json_dict)
+        price_template = json.loads(price_doc.json_dict)
+        description_template = json.loads(description_doc.json_dict)
+
         cards_with_data = []
         variables = []
 
@@ -46,6 +54,12 @@ class MainCreator(BaseCreator):
             price_var = f"prod_price_{c_id}"
             image_var = f"prod_img_{c_id}"
             description_var = f"prod_description_{c_id}"
+
+            local_card["items"][1:1] = [
+                copy.deepcopy(price_template),
+                copy.deepcopy(title_template),
+                copy.deepcopy(description_template),
+            ]
 
             for item in local_card["items"]:
                 element_id = item.get("id")
@@ -63,7 +77,10 @@ class MainCreator(BaseCreator):
                     item["text"] = f"@{{{description_var}}}"
 
                 elif element_id == "product_buttons_container":
-                    item["items"] = [cart_btn_template, buy_btn_template]
+                    item["items"] = [
+                        copy.deepcopy(cart_btn_template),
+                        copy.deepcopy(buy_btn_template),
+                    ]
 
             cards_with_data.append(local_card)
 
@@ -111,6 +128,14 @@ class CartCreator(BaseCreator):
         element_doc = await ui_repo.get_element_by_type("cart_element")
         cart_template = json.loads(element_doc.json_dict)
 
+        title_doc = await ui_repo.get_element_by_type("product_title_layer")
+        price_doc = await ui_repo.get_element_by_type("product_price_layer")
+        description_doc = await ui_repo.get_element_by_type("product_description_layer")
+
+        title_template = json.loads(title_doc.json_dict)
+        price_template = json.loads(price_doc.json_dict)
+        description_template = json.loads(description_doc.json_dict)
+
         cards_with_data = []
         variables = []
 
@@ -119,6 +144,14 @@ class CartCreator(BaseCreator):
         for c in clothes:
             c_id = str(c.id)
             local_card = copy.deepcopy(cart_template)
+
+            for item in local_card["items"]:
+                if item.get("id") == "empty_text_container":
+                    item["items"][0:0] = [
+                        copy.deepcopy(price_template),
+                        copy.deepcopy(title_template),
+                        copy.deepcopy(description_template),
+                    ]
 
             title_var = f"cart_title_{c_id}"
             price_var = f"cart_price_{c_id}"
@@ -129,20 +162,18 @@ class CartCreator(BaseCreator):
                 for item in elements_list:
                     element_id = item.get("id")
 
-                    if element_id == "empty_title_layer":
+                    if element_id == "product_title_layer":
                         item["text"] = f"@{{{title_var}}}"
                     elif element_id == "empty_image_layer":
                         item["image_url"] = f"@{{{image_var}}}"
-                    elif element_id == "empty_subtitle_layer":
+                    elif element_id == "product_badge_price_layer":
                         item["text"] = f"@{{{price_var}}}"
-                    elif element_id == "empty_description_layer":
+                    elif element_id == "product_description_layer":
                         item["text"] = f"@{{{description_var}}}"
 
-                    # Если у элемента есть свои внутренние items, спускаемся глубже
                     if "items" in item:
                         update_elements(item["items"])
 
-            # Запускаем поиск по всем элементам карточки
             if "items" in local_card:
                 update_elements(local_card["items"])
 
@@ -156,7 +187,11 @@ class CartCreator(BaseCreator):
                 {"name": image_var, "type": "string", "value": GLOBAL_PHOTO}
             )
             variables.append(
-                {"name": description_var, "type": "string", "value": c.descripton}  # Исправлена опечатка (description)
+                {
+                    "name": description_var,
+                    "type": "string",
+                    "value": c.descripton,
+                }
             )
 
         grid_found = False
