@@ -91,7 +91,7 @@ class MainCreator(BaseCreator):
                 {"name": price_var, "type": "string", "value": f"{c.price} ₽"}
             )
             variables.append(
-                {"name": image_var, "type": "string", "value": GLOBAL_PHOTO}
+                {"name": image_var, "type": "string", "value": LOCAL_PHOTO}
             )
             variables.append(
                 {"name": description_var, "type": "string", "value": c.descripton}
@@ -188,7 +188,7 @@ class CartCreator(BaseCreator):
                 {"name": price_var, "type": "string", "value": f"{c.price} ₽"}
             )
             variables.append(
-                {"name": image_var, "type": "string", "value": GLOBAL_PHOTO}
+                {"name": image_var, "type": "string", "value": LOCAL_PHOTO}
             )
             variables.append(
                 {
