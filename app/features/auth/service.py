@@ -47,13 +47,5 @@ class AuthService:
         payload = {"sub": user_id, "exp": expire_time}
         return jwt.encode(payload, secret_key, algorithm="HS256")
 
-    def _get_id_from_token(self, token: str) -> int:
-        payload = jwt.decode(
-            token,
-            os.getenv("JWT_SECRET_KEY"),
-            algorithms=["HS256"],
-        )
-        return int(payload["sub"])
-
 
 auth_service = AuthService()
