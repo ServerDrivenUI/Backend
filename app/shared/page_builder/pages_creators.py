@@ -10,6 +10,7 @@ class BaseCreator(ABC):
     """Создают именно нужную страницу"""
 
     page_type: str = ""
+    nav_title: str = ""
 
     @abstractmethod
     async def get_page(
@@ -20,6 +21,7 @@ class BaseCreator(ABC):
 
 class MainCreator(BaseCreator):
     page_type: str = "main_market_page"
+    nav_title: str = "Главная"
 
     async def get_page(
         self, page_json: Dict[str, Any]
@@ -112,6 +114,7 @@ class MainCreator(BaseCreator):
 
 class AuthCreator(BaseCreator):
     page_type: str = "auth_page"
+    nav_title: str = "Авторизация"
 
     async def get_page(
         self, page_json: Dict[str, Any]
@@ -121,6 +124,7 @@ class AuthCreator(BaseCreator):
 
 class CartCreator(BaseCreator):
     page_type: str = "cart_page"
+    nav_title: str = "Корзина"
 
     async def get_page(
         self, page_json: Dict[str, Any]
@@ -207,7 +211,6 @@ class CartCreator(BaseCreator):
             )
 
         return page_json, variables
-
 
 
 creators = [MainCreator(), AuthCreator(), CartCreator()]
