@@ -70,6 +70,20 @@ class PagesBuilder:
 
         variables.append({"name": nav_title_var, "type": "string", "value": nav_title})
         variables.append({"name": nav_btn_var, "type": "string", "value": btn_title})
+        variables.append(
+            {
+                "name": "home_icon",
+                "type": "string",
+                "value": "http://localhost:5200/assets/house-solid-full.svg",
+            }
+        )
+        variables.append(
+            {
+                "name": "cart_icon",
+                "type": "string",
+                "value": "http://localhost:5200/assets/basket-shopping-solid-full.svg",
+            }
+        )
 
         return navbar_template, variables
 

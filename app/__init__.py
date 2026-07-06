@@ -38,6 +38,8 @@ def create_app() -> FastAPI:
 
     app.mount("/assets", StaticFiles(directory="assets"), name="assets")
     print("Фото тестовое по http://localhost:5200/assets/clothes.jpg")
+    print("Иконки http://localhost:5200/assets/basket-shopping-solid-full.svg")
+    print("http://localhost:5200/assets/house-solid-full.svg")
 
     config_const = os.getenv("CONFIG")
     config = config_factory(config_const)
