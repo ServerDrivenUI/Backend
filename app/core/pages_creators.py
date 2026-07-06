@@ -52,8 +52,6 @@ class MainCreator(BaseCreator):
 
         clothes = await content_repo.get_all_clothes()
 
-        print(len(clothes))
-
         for c in clothes:
             c_id = str(c.id)
             local_card = copy.deepcopy(card_template)
