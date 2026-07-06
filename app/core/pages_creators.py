@@ -72,10 +72,21 @@ class MainCreator(BaseCreator):
             local_already_in_cart_btn = copy.deepcopy(already_in_cart_template)
             local_buy_btn = copy.deepcopy(buy_btn_template)
 
+            local_already_in_cart_btn_str = json.dumps(local_already_in_cart_btn)
+            local_already_in_cart_btn_str = local_already_in_cart_btn_str.replace(
+                "item_id_PLACEHOLDER", item_id_var
+            )
+            local_already_in_cart_btn = json.loads(local_already_in_cart_btn_str)
+
             if "action" in local_cart_btn:
                 local_cart_btn["action"][
                     "url"
                 ] = f"myapp://add_to_cart?clothes_item_id=@{{{item_id_var}}}"
+
+            if "action" in local_already_in_cart_btn:
+                local_already_in_cart_btn["action"][
+                    "url"
+                ] = f"myapp://remove_from_cart?clothes_item_id=@{{{item_id_var}}}"
 
             if "action" in local_buy_btn:
                 local_buy_btn["action"][
