@@ -13,6 +13,7 @@ SDUI_TEMPLATES = {
         },
         "_template_button": {
             "type": "text",
+            "$actions": "actions",
             "text_alignment_horizontal": "center",
             "text_alignment_vertical": "center",
             "border": {"$corner_radius": "corners"},
@@ -21,6 +22,7 @@ SDUI_TEMPLATES = {
         },
     }
 }
+
 
 COLORS = ["#42b077", "#018a51", "#f0fff0", "#121212", "#e6121212", "#b3121212"]
 
