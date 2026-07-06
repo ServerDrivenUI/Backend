@@ -1,5 +1,6 @@
 from app.shared.dbmodels import UIElement, ClothesItem, Page, Cart
 from beanie import PydanticObjectId
+from bson import ObjectId
 
 
 class ContentRepository:
@@ -10,11 +11,14 @@ class ContentRepository:
         return clothes
 
     async def get_user_cart(self, user_id: PydanticObjectId) -> list[ClothesItem]:
-        cart_items = await Cart.find(Cart.user.id == user_id).all()
+        cart_items = await Cart.find({"user.$id": ObjectId(str(user_id))}).to_list()
 
         clothes_items = []
         for cart in cart_items:
-            clothes_items.append(cart.clothes)
+            clothes_id = cart.clothes.to_ref().id
+            item = await ClothesItem.get(clothes_id)
+            if item:
+                clothes_items.append(item)
 
         return clothes_items
 

@@ -166,6 +166,9 @@ class CartCreator(BaseCreator):
     async def get_page(
         self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        if not user_id:
+            raise Exception("Не Авторизован, нет jwt токена")
+
         element_doc = await ui_repo.get_element_by_type("cart_element")
         cart_template = json.loads(element_doc.json_dict)
 
@@ -180,7 +183,7 @@ class CartCreator(BaseCreator):
         cards_with_data = []
         variables = []
 
-        clothes = await content_repo.get_all_clothes()
+        clothes = await content_repo.get_user_cart(user_id)
 
         for c in clothes:
             c_id = str(c.id)
