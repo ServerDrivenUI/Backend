@@ -1,5 +1,5 @@
 import logging
-from app.shared.page_builder import page_builder
+from app.core import page_builder
 from app.shared.consts import SDUI_TEMPLATES
 
 
