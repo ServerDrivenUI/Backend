@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 main_config: BaseConfig = None
-security = HTTPBearer()
+security = HTTPBearer(auto_error=True)
 
 
 class DatabaseExtension:

@@ -2,13 +2,15 @@ from .repository import ui_repo, pages_repo
 import json
 from typing import Any, Dict, List, Tuple
 from .pages_creators import creators, BaseCreator
+from beanie import PydanticObjectId
+from typing import Optional
 
 
 class PagesBuilder:
     """Собирает нужные страницы по их типу"""
 
     async def build_page(
-        self, page_type: str
+        self, page_type: str, user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         page = await pages_repo.get_page_by_type(page_type)
         if not page:
@@ -19,9 +21,11 @@ class PagesBuilder:
 
         creator = self._get_creator(page_type)
 
-        page_json, variables = await creator.get_page(page_json)
+        page_json, variables = await creator.get_page(page_json, user_id)
 
-        navbar_template, nav_bar_variabals = await self._add_navbar(creator.nav_title, creator.page_type)
+        navbar_template, nav_bar_variabals = await self._add_navbar(
+            creator.nav_title, creator.page_type, user_id
+        )
 
         final_screen = await self._add_background(page_json, navbar_template)
         final_variables = variables + nav_bar_variabals
@@ -29,8 +33,11 @@ class PagesBuilder:
         return final_screen, final_variables
 
     async def _add_navbar(
-        self, nav_title: str, page_type: str
+        self, nav_title: str, page_type: str, user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        LOGOUT = "Выйти"
+        LOGIN = "Войти"
+
         navbar_doc = await ui_repo.get_element_by_type("navbar")
         if not navbar_doc:
             print("Элемент 'navbar' не найден в базе данных!")
@@ -57,8 +64,12 @@ class PagesBuilder:
 
         variables = []
 
+        btn_title = LOGIN
+        if user_id:
+            btn_title = LOGOUT
+
         variables.append({"name": nav_title_var, "type": "string", "value": nav_title})
-        variables.append({"name": nav_btn_var, "type": "string", "value": "Выйти"})
+        variables.append({"name": nav_btn_var, "type": "string", "value": btn_title})
 
         return navbar_template, variables
 

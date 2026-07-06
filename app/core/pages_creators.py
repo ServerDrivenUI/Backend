@@ -4,6 +4,8 @@ from typing import Any, Dict, List, Tuple
 from .repository import content_repo, ui_repo
 import copy
 from app.shared.consts import GLOBAL_PHOTO, LOCAL_PHOTO
+from beanie import PydanticObjectId
+from typing import Optional
 
 
 class BaseCreator(ABC):
@@ -14,7 +16,7 @@ class BaseCreator(ABC):
 
     @abstractmethod
     async def get_page(
-        self, page_json: Dict[str, Any]
+        self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         pass
 
@@ -24,16 +26,18 @@ class MainCreator(BaseCreator):
     nav_title: str = "Главная"
 
     async def get_page(
-        self, page_json: Dict[str, Any]
+        self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         element_doc = await ui_repo.get_element_by_type("product_card")
         card_template = json.loads(element_doc.json_dict)
 
         cart_btn_doc = await ui_repo.get_element_by_type("cart_button")
         buy_btn_doc = await ui_repo.get_element_by_type("buy_button")
+        already_bought_doc = await ui_repo.get_element_by_type("already_in_cart")
 
         cart_btn_template = json.loads(cart_btn_doc.json_dict)
         buy_btn_template = json.loads(buy_btn_doc.json_dict)
+        already_in_cart_template = json.loads(already_bought_doc.json_dict)
 
         title_doc = await ui_repo.get_element_by_type("product_title_layer")
         price_doc = await ui_repo.get_element_by_type("product_price_layer")
@@ -47,6 +51,8 @@ class MainCreator(BaseCreator):
         variables = []
 
         clothes = await content_repo.get_all_clothes()
+
+        print(len(clothes))
 
         for c in clothes:
             c_id = str(c.id)
@@ -65,13 +71,18 @@ class MainCreator(BaseCreator):
             ]
 
             local_cart_btn = copy.deepcopy(cart_btn_template)
+            local_already_in_cart_btn = copy.deepcopy(already_in_cart_template)
             local_buy_btn = copy.deepcopy(buy_btn_template)
-            
+
             if "action" in local_cart_btn:
-                local_cart_btn["action"]["url"] = f"myapp://add_to_cart?clothes_item_id=@{{{item_id_var}}}"
-            
+                local_cart_btn["action"][
+                    "url"
+                ] = f"myapp://add_to_cart?clothes_item_id=@{{{item_id_var}}}"
+
             if "action" in local_buy_btn:
-                local_buy_btn["action"]["url"] = f"myapp://buy?clothes_item_id=@{{{item_id_var}}}"
+                local_buy_btn["action"][
+                    "url"
+                ] = f"myapp://buy?clothes_item_id=@{{{item_id_var}}}"
 
             for item in local_card["items"]:
                 element_id = item.get("id")
@@ -89,10 +100,16 @@ class MainCreator(BaseCreator):
                     item["text"] = f"@{{{description_var}}}"
 
                 elif element_id == "product_buttons_container":
-                    item["items"] = [
-                        local_cart_btn,
-                        local_buy_btn,
-                    ]
+                    if user_id and await content_repo.is_in_user_cart(user_id, c.id):
+                        item["items"] = [
+                            local_already_in_cart_btn,
+                            local_buy_btn,
+                        ]
+                    else:
+                        item["items"] = [
+                            local_cart_btn,
+                            local_buy_btn,
+                        ]
 
             cards_with_data.append(local_card)
 
@@ -106,9 +123,7 @@ class MainCreator(BaseCreator):
             variables.append(
                 {"name": description_var, "type": "string", "value": c.descripton}
             )
-            variables.append(
-                {"name": item_id_var, "type": "string", "value": c_id}
-            )
+            variables.append({"name": item_id_var, "type": "string", "value": c_id})
 
         grid_found = False
         for item in page_json["items"]:
@@ -130,7 +145,7 @@ class AuthCreator(BaseCreator):
     nav_title: str = "Авторизация"
 
     async def get_page(
-        self, page_json: Dict[str, Any]
+        self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         return page_json, []
 
@@ -140,7 +155,7 @@ class CartCreator(BaseCreator):
     nav_title: str = "Корзина"
 
     async def get_page(
-        self, page_json: Dict[str, Any]
+        self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         element_doc = await ui_repo.get_element_by_type("cart_element")
         cart_template = json.loads(element_doc.json_dict)
