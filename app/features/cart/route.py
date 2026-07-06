@@ -17,7 +17,6 @@ async def add_cart_endpoint(
     result = await cart_service.add_to_cart(
         user_id=user_id, clothes_item_id=body.clothes_item_id
     )
-    print(result)
     return ApiResponse[str](data="OK")
 
 

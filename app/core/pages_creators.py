@@ -56,12 +56,22 @@ class MainCreator(BaseCreator):
             price_var = f"prod_price_{c_id}"
             image_var = f"prod_img_{c_id}"
             description_var = f"prod_description_{c_id}"
+            item_id_var = f"item_id_{c_id}"
 
             local_card["items"][1:1] = [
                 copy.deepcopy(price_template),
                 copy.deepcopy(title_template),
                 copy.deepcopy(description_template),
             ]
+
+            local_cart_btn = copy.deepcopy(cart_btn_template)
+            local_buy_btn = copy.deepcopy(buy_btn_template)
+            
+            if "action" in local_cart_btn:
+                local_cart_btn["action"]["url"] = f"myapp://add_to_cart?clothes_item_id=@{{{item_id_var}}}"
+            
+            if "action" in local_buy_btn:
+                local_buy_btn["action"]["url"] = f"myapp://buy?clothes_item_id=@{{{item_id_var}}}"
 
             for item in local_card["items"]:
                 element_id = item.get("id")
@@ -80,8 +90,8 @@ class MainCreator(BaseCreator):
 
                 elif element_id == "product_buttons_container":
                     item["items"] = [
-                        copy.deepcopy(cart_btn_template),
-                        copy.deepcopy(buy_btn_template),
+                        local_cart_btn,
+                        local_buy_btn,
                     ]
 
             cards_with_data.append(local_card)
@@ -95,6 +105,9 @@ class MainCreator(BaseCreator):
             )
             variables.append(
                 {"name": description_var, "type": "string", "value": c.descripton}
+            )
+            variables.append(
+                {"name": item_id_var, "type": "string", "value": c_id}
             )
 
         grid_found = False
