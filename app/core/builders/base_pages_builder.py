@@ -3,6 +3,17 @@ from typing import Any, Dict, List, Tuple
 from app.core.creators.base_creator import BaseCreator
 from beanie import PydanticObjectId
 from typing import Optional
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class BaseColors:
+    PRIMARY: str
+    DARK: str
+    WHITE: str
+    BLACK: str
+    BLACK_TEXT_1: str
+    BLACK_TEXT_2: str
 
 
 class BasePagesBuilder(ABC):
@@ -10,6 +21,7 @@ class BasePagesBuilder(ABC):
 
     creators: list[BaseCreator]
     DESIGN_ID: str = ""
+    COLORS: BaseColors
 
     def __init__(self, _creators: list[BaseCreator]):
         self.creators = _creators

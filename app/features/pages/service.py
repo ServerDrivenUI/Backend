@@ -2,7 +2,7 @@ import logging
 from app.core import page_builder
 from app.shared.consts import SDUI_TEMPLATES
 from beanie import PydanticObjectId
-from typing import Optional
+from typing import Optional, Any
 
 
 class PagesService:
@@ -11,7 +11,7 @@ class PagesService:
 
     async def get_page(
         self, page_type: str, user_id: Optional[PydanticObjectId] = None
-    ):
+    ) -> tuple[dict[str, Any], str]:
         """Выбирает нужную страницу по ее типу из БД"""
         page_with_data, values = await page_builder.build_page(page_type, user_id)
         final_response = {
@@ -23,7 +23,7 @@ class PagesService:
             "templates": SDUI_TEMPLATES,
         }
 
-        return final_response
+        return final_response, page_builder.COLORS.WHITE
 
 
 pages_service = PagesService()

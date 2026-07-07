@@ -26,15 +26,6 @@ SDUI_TEMPLATES = {
 }
 
 
-class Colors(StrEnum):
-    PRIMARY: str = "#42b077"
-    DARK: str = "#018a51"
-    WHITE: str = "#f0fff0"
-    BLACK: str = "#121212"
-    BLACK_TEXT_1: str = "#e6121212"
-    BLACK_TEXT_2: str = "#b3121212"
-
-
 class DesignIds(StrEnum):
     GREEN: str = "green"
     BLACK: str = "black"

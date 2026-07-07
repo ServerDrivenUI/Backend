@@ -1,9 +1,9 @@
 from ..repository import ui_repo, pages_repo
 import json
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Type
 from beanie import PydanticObjectId
 from typing import Optional
-from .base_pages_builder import BasePagesBuilder
+from .base_pages_builder import BasePagesBuilder, BaseColors
 from app.shared.consts import DesignIds
 
 
@@ -11,6 +11,14 @@ class GreenPagesBuilder(BasePagesBuilder):
     """Собирает нужные страницы по их типу"""
 
     DESIGN_ID: str = DesignIds.GREEN
+    COLORS = BaseColors(
+        PRIMARY="#42b077",
+        DARK="#018a51",
+        WHITE="#f0fff0",
+        BLACK="#121212",
+        BLACK_TEXT_1="#e6121212",
+        BLACK_TEXT_2="#b3121212",
+    )
 
     def __init__(self, _creators):
         super().__init__(_creators)
