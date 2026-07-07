@@ -1,0 +1,58 @@
+graph TD
+    classDef flutter fill:#0553b1,stroke:#42a5f5,stroke-width:2px,color:#fff;
+    classDef divkit fill:#7b1fa2,stroke:#ce93d8,stroke-width:2px,color:#fff;
+    classDef server fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#fff;
+    classDef root fill:#0d47a1,stroke:#42a5f5,stroke-width:3px,color:#fff;
+    classDef layer fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000;
+    classDef module fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px,color:#000;
+    classDef file fill:#fff,stroke:#777,stroke-width:1px,color:#000;
+    classDef mongo fill:#4db33d,stroke:#3f8a2e,stroke-width:2px,color:#fff;
+    classDef abstract fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000;
+
+    subgraph ClientSpace [FLUTTER WEB CLIENT]
+        FlutterApp[Flutter App]:::flutter
+        DivKitRenderer[DivKit Renderer]:::divkit
+        FlutterApp -->|1. Отрисовка UI| DivKitRenderer
+    end
+
+    subgraph ServerSpace [BACKEND]
+        App[📂 app/]:::root
+
+        App --> Shared[📂 shared/]:::layer
+        App --> Core[📂 core/]:::layer
+        App --> Features[📂 features/]:::layer
+
+        Shared --> S_Files["📄 config.py<br>📄 consts.py<br>📄 dbmodels.py<br>📄 extensions.py<br>📄 response.py<br>📄 token.py"]:::file
+
+        Core --> Builders[📂 builders/]:::module
+        Core --> Creators[📂 creators/]:::module
+        Core --> CoreRepo["📄 repository.py"]:::file
+
+        Builders --> B_Files["📄 base_pages_builder.py<br>📄 green_pages_builder.py"]:::file
+        Creators --> C_Files["📄 base_creator.py<br>📄 green_creators"]:::file
+
+        B_Files --> BasePagesBuilder["<b>BasePagesBuilder (ABC)</b><br/>creators: list[BaseCreator]<br/>DESIGN_ID: str<br/>COLORS: BaseColors<br/>+build_page()<br/>+_add_navbar()<br/>+_add_background()<br/>+_get_creator()"]:::abstract
+        C_Files --> BaseCreator["<b>BaseCreator (ABC)</b><br/>page_type: str<br/>nav_title: str<br/>+get_page()"]:::abstract
+
+        BasePagesBuilder -->|"содержит список"| BaseCreator
+
+        Features --> Auth[📂 auth/]:::module
+        Features --> Cart[📂 cart/]:::module
+        Features --> GenData[📂 generate_data/]:::module
+        Features --> Pages[📂 pages/]:::module
+
+        F_Structure["📄 requests.py<br>📄 routes.py<br>📄 service.py<br>📄 repository.py<br>📄 response.py"]:::file
+
+        Auth --> F_Structure
+        Cart --> F_Structure
+        GenData --> F_Structure
+        Pages --> F_Structure
+    end
+
+    MongoDB[(MongoDB)]:::mongo
+
+    DivKitRenderer -->|2. Запрос DivKit-шаблонов| Pages
+    Pages -->|3. JSON с DivKit-компонентами| DivKitRenderer
+
+    F_Structure -->|4. PyMongo/Beanie | MongoDB
+    CoreRepo -->|PyMongo/Beanie | MongoDB
