@@ -1,13 +1,19 @@
-from .repository import ui_repo, pages_repo
+from ..repository import ui_repo, pages_repo
 import json
 from typing import Any, Dict, List, Tuple
-from .pages_creators import creators, BaseCreator
 from beanie import PydanticObjectId
 from typing import Optional
+from .base_pages_builder import BasePagesBuilder
+from app.shared.consts import DesignIds
 
 
-class PagesBuilder:
+class GreenPagesBuilder(BasePagesBuilder):
     """Собирает нужные страницы по их типу"""
+
+    DESIGN_ID: str = DesignIds.GREEN
+
+    def __init__(self, _creators):
+        super().__init__(_creators)
 
     async def build_page(
         self, page_type: str, user_id: Optional[PydanticObjectId] = None
@@ -106,14 +112,3 @@ class PagesBuilder:
         background_template["items"].insert(1, content_template)
 
         return background_template
-
-    def _get_creator(self, page_type: str) -> BaseCreator | None:
-        """Определяет нужный создатель страницы"""
-        for c in creators:
-            if c.page_type == page_type:
-                return c
-
-        return None
-
-
-page_builder = PagesBuilder()

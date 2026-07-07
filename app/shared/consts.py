@@ -35,6 +35,11 @@ class Colors(StrEnum):
     BLACK_TEXT_2: str = "#b3121212"
 
 
+class DesignIds(StrEnum):
+    GREEN: str = "green"
+    BLACK: str = "black"
+
+
 LOCAL_PHOTO = "http://localhost:5200/assets/clothes.jpg"
 GLOBAL_PHOTO = (
     "https://i.pinimg.com/originals/fa/f4/06/faf406a7a9f1aca387946d5d96d59c34.jpg"
