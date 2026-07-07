@@ -1,4 +1,4 @@
-from app.shared.response import ApiResponse
+from .response import PageResponse
 from fastapi import APIRouter
 from .service import pages_service
 from .requests import PageRequest
@@ -16,4 +16,4 @@ async def page_endpoint(
     user_id: Optional[PydanticObjectId] = Depends(get_current_user_id_optional),
 ):
     result = await pages_service.get_page(body.type, user_id)
-    return ApiResponse[dict](data=result)
+    return PageResponse[dict](data=result, color="#f0fff0")
