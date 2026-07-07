@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 SDUI_TEMPLATES = {
     "templates": {
         "_template_close": {
@@ -24,7 +26,14 @@ SDUI_TEMPLATES = {
 }
 
 
-COLORS = ["#42b077", "#018a51", "#f0fff0", "#121212", "#e6121212", "#b3121212"]
+class Colors(StrEnum):
+    PRIMARY: str = "#42b077"
+    DARK: str = "#018a51"
+    WHITE: str = "#f0fff0"
+    BLACK: str = "#121212"
+    BLACK_TEXT_1: str = "#e6121212"
+    BLACK_TEXT_2: str = "#b3121212"
+
 
 LOCAL_PHOTO = "http://localhost:5200/assets/clothes.jpg"
 GLOBAL_PHOTO = (
