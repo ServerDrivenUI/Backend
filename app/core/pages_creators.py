@@ -201,6 +201,7 @@ class CartCreator(BaseCreator):
             price_var = f"cart_price_{c_id}"
             image_var = f"cart_img_{c_id}"
             description_var = f"cart_description_{c_id}"
+            item_id_var = f"item_id_{c_id}"
 
             def update_elements(elements_list):
                 for item in elements_list:
@@ -214,6 +215,11 @@ class CartCreator(BaseCreator):
                         item["text"] = f"@{{{price_var}}}"
                     elif element_id == "product_description_layer":
                         item["text"] = f"@{{{description_var}}}"
+                    elif element_id == "empty_close_button":
+                        if "action" in item and "url" in item["action"]:
+                            item["action"][
+                                "url"
+                            ] = f"myapp://remove_from_cart?clothes_item_id=@{{{item_id_var}}}"
 
                     if "items" in item:
                         update_elements(item["items"])
@@ -237,6 +243,7 @@ class CartCreator(BaseCreator):
                     "value": c.descripton,
                 }
             )
+            variables.append({"name": item_id_var, "type": "string", "value": c_id})
 
         grid_found = False
         for item in page_json["items"]:
