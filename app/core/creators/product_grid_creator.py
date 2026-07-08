@@ -8,13 +8,17 @@ from beanie import PydanticObjectId
 from typing import Optional
 
 
-class MainCreator(BaseCreator):
-    page_type: str = "main_market_page"
-    nav_title: str = "Главная"
+class ProductGridCreator(BaseCreator):
+    item_type: str = "product_grid"
 
-    async def get_page(
-        self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
+    async def get_item(
+        self,
+        context: Optional[Dict[str, Any]] = None,
+        user_id: Optional[PydanticObjectId] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        grid_doc = await ui_repo.get_element_by_type(self.item_type)
+        grid_template = json.loads(grid_doc.json_dict)
+
         element_doc = await ui_repo.get_element_by_type("product_card")
         card_template = json.loads(element_doc.json_dict)
 
@@ -121,16 +125,6 @@ class MainCreator(BaseCreator):
             )
             variables.append({"name": item_id_var, "type": "string", "value": c_id})
 
-        grid_found = False
-        for item in page_json["items"]:
-            if item.get("id") == "products_grid":
-                item["items"] = cards_with_data
-                grid_found = True
-                break
+        grid_template["items"] = cards_with_data
 
-        if not grid_found:
-            raise ValueError(
-                "Сетка с id='products_grid' не найдена в шаблоне страницы!"
-            )
-
-        return page_json, variables
+        return grid_template, variables

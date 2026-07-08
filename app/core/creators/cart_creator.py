@@ -12,7 +12,7 @@ class CartCreator(BaseCreator):
     page_type: str = "cart_page"
     nav_title: str = "Корзина"
 
-    async def get_page(
+    async def get_item(
         self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         if not user_id:

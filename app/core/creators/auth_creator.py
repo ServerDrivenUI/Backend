@@ -9,7 +9,7 @@ class AuthCreator(BaseCreator):
     page_type: str = "auth_page"
     nav_title: str = "Авторизация"
 
-    async def get_page(
+    async def get_item(
         self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         return page_json, []

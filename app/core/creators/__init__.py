@@ -1,4 +1,7 @@
-from app.core.creators.green_creators import green_creators_list
-from app.shared.consts import DesignIds
+from .navbar_creator import NavbarCreator
+from .product_grid_creator import ProductGridCreator
 
-CREATORS_LISTS = {DesignIds.GREEN: green_creators_list}
+CREATORS_DICT = {
+    NavbarCreator.item_type: NavbarCreator(),
+    ProductGridCreator.item_type: ProductGridCreator(),
+}

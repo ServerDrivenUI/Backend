@@ -1,2 +1,1 @@
-from .green_pages_builder import GreenPagesBuilder
 from .base_pages_builder import BasePagesBuilder
