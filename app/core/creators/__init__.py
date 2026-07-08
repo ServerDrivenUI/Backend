@@ -1,7 +1,11 @@
-from .navbar_creator import NavbarCreator
-from .product_grid_creator import ProductGridCreator
+from .base_creator import BaseCreator
+from typing import Dict, Type
 
-CREATORS_DICT = {
-    NavbarCreator.item_type: NavbarCreator(),
-    ProductGridCreator.item_type: ProductGridCreator(),
-}
+CREATORS_DICT: Dict[str, BaseCreator] = {}
+
+
+def register_creator(creator_class: Type[BaseCreator]):
+    """Декоратор для регистрации креаторов"""
+    instance = creator_class()
+    CREATORS_DICT[creator_class.item_type] = instance
+    return creator_class

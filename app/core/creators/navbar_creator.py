@@ -5,8 +5,10 @@ from ..repository import ui_repo
 from app.shared.consts import Icons
 from beanie import PydanticObjectId
 from typing import Optional
+from . import register_creator
 
 
+@register_creator
 class NavbarCreator(BaseCreator):
     item_type: str = "navbar"
 
