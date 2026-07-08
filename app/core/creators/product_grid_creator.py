@@ -6,10 +6,8 @@ import copy
 from app.shared.consts import LOCAL_PHOTO
 from beanie import PydanticObjectId
 from typing import Optional
-from . import register_creator
 
 
-@register_creator
 class ProductGridCreator(BaseCreator):
     item_type: str = "product_grid"
 

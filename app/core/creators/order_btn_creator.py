@@ -1,23 +1,22 @@
+import json
 from typing import Any, Dict, List, Tuple
 from app.core.repository import content_repo, ui_repo
 from app.core.creators.base_creator import BaseCreator
+import copy
+from app.shared.consts import LOCAL_PHOTO
 from beanie import PydanticObjectId
 from typing import Optional
-import json
 
 
-class AuthCreator(BaseCreator):
-    item_type: str = "auth_form"
+class OrderBtnCreator(BaseCreator):
+    item_type: str = "order_btn"
 
     async def get_item(
         self,
         context: Optional[Dict[str, Any]] = None,
         user_id: Optional[PydanticObjectId] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-        auth_form_doc = await ui_repo.get_element_by_type(self.item_type)
-        if not auth_form_doc:
-            print("Элемент 'navbar' не найден в базе данных!")
+        order_btn_doc = await ui_repo.get_element_by_type(self.item_type)
+        order_btn_template = json.loads(order_btn_doc.json_dict)
 
-        auth_template = json.loads(auth_form_doc.json_dict)
-
-        return auth_template, []
+        return order_btn_template, []
