@@ -18,7 +18,7 @@ class GenerateService:
             user_dto = UserDTO(
                 login=self.faker.email(),
                 password_hash=self._generate_password_hash(self.faker.password()),
-                is_impulsive=True,
+                is_impulsive=random.choice([True, False]),
             )
             try:
                 await generate_repo.add_user(user_dto)

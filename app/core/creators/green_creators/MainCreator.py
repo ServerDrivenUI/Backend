@@ -12,10 +12,20 @@ class MainCreator(BaseCreator):
     page_type: str = "main_market_page"
     nav_title: str = "Главная"
 
+    def __init__(
+        self, page_type: str = "main_market_page", nav_title: str = "Главная"
+    ):
+        self.page_type = page_type
+        self.nav_title = nav_title
+
     async def get_page(
-        self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
+        self,
+        page_json: Dict[str, Any],
+        user_id: Optional[PydanticObjectId] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-        element_doc = await ui_repo.get_element_by_type("product_card")
+        is_impulsive = context.get("is_impulsive", False) if context else False
+        element_doc = await ui_repo.get_element_by_type("product_card", is_impulsive)
         card_template = json.loads(element_doc.json_dict)
 
         cart_btn_doc = await ui_repo.get_element_by_type("cart_button")
@@ -120,6 +130,10 @@ class MainCreator(BaseCreator):
                 {"name": description_var, "type": "string", "value": c.descripton}
             )
             variables.append({"name": item_id_var, "type": "string", "value": c_id})
+
+        if page_json.get("id") == "products_grid" or page_json.get("type") == "product_grid":
+            page_json["items"] = cards_with_data
+            return page_json, variables
 
         grid_found = False
         for item in page_json["items"]:

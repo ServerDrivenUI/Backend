@@ -34,8 +34,14 @@ class ContentRepository:
 class UIElementsRepository:
     """Работает с нужными шаблонами элементов UI"""
 
-    async def get_element_by_type(self, type: str) -> UIElement:
-        element = await UIElement.find_one(UIElement.type == type)
+    async def get_element_by_type(
+        self, type: str, is_impulsive: bool = False
+    ) -> UIElement:
+        element = await UIElement.find_one(
+            {"type": type, "is_for_impulsive": is_impulsive}
+        )
+        if not element:
+            element = await UIElement.find_one({"type": type})
         return element
 
 

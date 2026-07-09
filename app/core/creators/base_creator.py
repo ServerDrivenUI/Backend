@@ -16,6 +16,9 @@ class BaseCreator(ABC):
 
     @abstractmethod
     async def get_page(
-        self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
+        self,
+        page_json: Dict[str, Any],
+        user_id: Optional[PydanticObjectId] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         pass

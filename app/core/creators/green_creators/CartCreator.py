@@ -13,7 +13,10 @@ class CartCreator(BaseCreator):
     nav_title: str = "Корзина"
 
     async def get_page(
-        self, page_json: Dict[str, Any], user_id: Optional[PydanticObjectId] = None
+        self,
+        page_json: Dict[str, Any],
+        user_id: Optional[PydanticObjectId] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         if not user_id:
             raise Exception("Не Авторизован, нет jwt токена")
@@ -33,6 +36,14 @@ class CartCreator(BaseCreator):
         variables = []
 
         clothes = await content_repo.get_user_cart(user_id)
+
+        if not clothes:
+            empty_cart_doc = await ui_repo.get_element_by_type("empty_cart")
+            empty_cart_template = json.loads(empty_cart_doc.json_dict) if empty_cart_doc else None
+            for item in page_json["items"]:
+                if item.get("id") == "product_info_container":
+                    item["items"] = [empty_cart_template] if empty_cart_template else []
+                    return page_json, variables
 
         for c in clothes:
             c_id = str(c.id)

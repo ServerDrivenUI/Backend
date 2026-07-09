@@ -5,6 +5,7 @@ from beanie import PydanticObjectId
 from typing import Optional
 from .base_pages_builder import BasePagesBuilder, BaseColors
 from app.shared.consts import DesignIds
+from app.shared.dbmodels import User
 
 
 class GreenPagesBuilder(BasePagesBuilder):
@@ -32,19 +33,54 @@ class GreenPagesBuilder(BasePagesBuilder):
             return None
 
         page_json = json.loads(page.json_dict)
+        user = await User.get(user_id) if user_id else None
+        context = {"is_impulsive": user.is_impulsive if user else False}
 
         creator = self._get_creator(page_type)
+        page_json, variables = await self._resolve_items(page_json, user_id, context)
 
-        page_json, variables = await creator.get_page(page_json, user_id)
+        if creator:
+            page_json, page_variables = await creator.get_page(
+                page_json, user_id, context
+            )
+            variables += page_variables
 
         navbar_template, nav_bar_variabals = await self._add_navbar(
-            creator.nav_title, creator.page_type, user_id
+            creator.nav_title if creator else page_type, page_type, user_id
         )
 
         final_screen = await self._add_background(page_json, navbar_template)
         final_variables = variables + nav_bar_variabals
 
         return final_screen, final_variables
+
+    async def _resolve_items(
+        self,
+        page_json: Dict[str, Any],
+        user_id: Optional[PydanticObjectId],
+        context: Dict[str, Any],
+    ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        variables: List[Dict[str, Any]] = []
+
+        async def resolve(elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+            resolved = []
+            for item in elements:
+                creator = self._get_creator(item.get("type", ""))
+                if creator:
+                    item_context = {**context, **item}
+                    item, item_variables = await creator.get_page(
+                        item, user_id, item_context
+                    )
+                    variables.extend(item_variables)
+                elif "items" in item:
+                    item["items"] = await resolve(item["items"])
+                resolved.append(item)
+            return resolved
+
+        if "items" in page_json:
+            page_json["items"] = await resolve(page_json["items"])
+
+        return page_json, variables
 
     async def _add_navbar(
         self, nav_title: str, page_type: str, user_id: Optional[PydanticObjectId] = None

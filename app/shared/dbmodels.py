@@ -1,5 +1,7 @@
 from beanie import Document, Link
 from pydantic import Field
+from datetime import datetime, timezone
+from typing import Optional
 
 
 class User(Document):
@@ -53,6 +55,16 @@ class OrderItem(Document):
         name = "order_items"
 
 
+class UserAction(Document):
+    user: Link[User]
+    action_type: str
+    item_id: Optional[str] = None
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    class Settings:
+        name = "user_actions"
+
+
 class Page(Document):
     """Модель Страницы (независимая)"""
 
@@ -76,4 +88,4 @@ class UIElement(Document):
 
 def get_beanie_models():
     """Регистрация всех новых моделей для DatabaseExtension"""
-    return [User, ClothesItem, Cart, Order, OrderItem, Page, UIElement]
+    return [User, ClothesItem, Cart, Order, OrderItem, UserAction, Page, UIElement]
