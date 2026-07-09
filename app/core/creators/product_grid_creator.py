@@ -92,6 +92,8 @@ class ProductGridCreator(BaseCreator):
 
                 elif element_id == "product_image_layer":
                     item["image_url"] = f"@{{{image_var}}}"
+                    if "action" in item:
+                        item["action"]["url"] = f"myapp://open_product?item_id=@{{{item_id_var}}}"
 
                 elif element_id == "product_title_layer":
                     item["text"] = f"@{{{title_var}}}"

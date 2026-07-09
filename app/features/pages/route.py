@@ -15,5 +15,7 @@ async def page_endpoint(
     body: PageRequest,
     user_id: Optional[PydanticObjectId] = Depends(get_current_user_id_optional),
 ):
-    result, background_color = await pages_service.get_page(body.type, user_id)
+    result, background_color = await pages_service.get_page(
+        page_type=body.type, user_id=user_id, clothes_item_id=body.clothes_item_id
+    )
     return PageResponse[dict](data=result, color=background_color)

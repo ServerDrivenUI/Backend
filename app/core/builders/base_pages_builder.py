@@ -31,7 +31,10 @@ class BasePagesBuilder:
     )
 
     async def build_page(
-        self, page_type: str, user_id: Optional[PydanticObjectId] = None
+        self,
+        page_type: str,
+        user_id: Optional[PydanticObjectId] = None,
+        clothes_item_id: Optional[PydanticObjectId] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         page = await pages_repo.get_page_by_type(page_type)
         if not page:
@@ -46,6 +49,7 @@ class BasePagesBuilder:
         items = page_json.get("items", [])
         for i in items:
             creator = self._get_creator(i["type"])
+            i["clothes_item_id"] = clothes_item_id
             template, vars = await creator.get_item(i, user_id)
 
             templates.append(template)
