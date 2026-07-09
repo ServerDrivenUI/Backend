@@ -4,12 +4,12 @@ from .repository import generate_repo
 import logging
 import faker_commerce
 import random
-from app.shared.extensions import pwd_context
+from app.shared.extensions import password_context
 
 
 class GenerateService:
     def __init__(self):
-        self.faker = Faker()
+        self.faker = Faker("ru_RU")
         self.faker.add_provider(faker_commerce.Provider)
         self.logger = logging.getLogger(__name__)
 
@@ -18,7 +18,9 @@ class GenerateService:
         for i in range(count):
             user_dto = UserDTO(
                 login=self.faker.email(),
-                password_hash=self._generate_password_hash(self.faker.password()),
+                password_hash=self._generate_password_hash(
+                    self.faker.password()
+                ),
                 is_impulsive=True,
             )
             try:
@@ -29,7 +31,7 @@ class GenerateService:
 
     def _generate_password_hash(self, password: str) -> bytes:
         """Генерирует hash паролей"""
-        return pwd_context.hash(password)
+        return password_context.hash(password)
 
     async def generate_clothes(self, count: int):
         """Генерирует вещи в каталоге"""
