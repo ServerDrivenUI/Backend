@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import os
 from dotenv import load_dotenv
+from app.shared.extensions import pwd_context
 
 load_dotenv()
 
@@ -33,11 +34,7 @@ class AuthService:
 
     def check_password(self, password: str, password_hash: bytes) -> bool:
         """Проверяет совпадение пароля и его хэша"""
-        # TODO: добавить хэш
-        if password == password_hash:
-            return True
-
-        return False
+        return pwd_context.verify(password, password_hash)
 
     def _create_jwt_token(self, user_id: str) -> str:
         secret_key = os.getenv("JWT_SECRET_KEY")

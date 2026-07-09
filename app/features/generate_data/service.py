@@ -4,6 +4,7 @@ from .repository import generate_repo
 import logging
 import faker_commerce
 import random
+from app.shared.extensions import pwd_context
 
 
 class GenerateService:
@@ -28,8 +29,7 @@ class GenerateService:
 
     def _generate_password_hash(self, password: str) -> bytes:
         """Генерирует hash паролей"""
-        # TODO: добавить генерацию хешей
-        return password
+        return pwd_context.hash(password)
 
     async def generate_clothes(self, count: int):
         """Генерирует вещи в каталоге"""

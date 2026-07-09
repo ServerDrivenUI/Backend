@@ -4,11 +4,13 @@ from fastapi.security import HTTPBearer
 from app.shared.config import BaseConfig
 import os
 from dotenv import load_dotenv
+from passlib.context import CryptContext
 
 load_dotenv()
 
 main_config: BaseConfig = None
 security = HTTPBearer(auto_error=True)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class DatabaseExtension:
