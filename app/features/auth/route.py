@@ -8,5 +8,8 @@ auth_route = APIRouter(tags=["auth"])
 
 @auth_route.post("/login")
 async def page_endpoint(body: AuthRequest):
-    jwt = await auth_service.login(body.login, body.password)
-    return ApiResponse[str | None](data=jwt)
+    try:
+        jwt = await auth_service.login(body.login, body.password)
+        return ApiResponse[str | None](data=jwt)
+    except Exception as e:
+        return ApiResponse[None](error=f"Ошибка {str(e)}")

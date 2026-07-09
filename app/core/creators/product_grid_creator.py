@@ -1,30 +1,27 @@
-import json
-from typing import Any, Dict, List, Tuple
-from app.core.repository import content_repo, ui_repo
-from app.core.creators.base_creator import BaseCreator
 import copy
-from app.shared.consts import LOCAL_PHOTO
+import json
+from typing import Any, Dict, List, Optional, Tuple
+
 from beanie import PydanticObjectId
-from typing import Optional
+
+from app.core.creators.base_creator import BaseCreator
+from app.core.repository import content_repo, ui_repo
+from app.shared.consts import LOCAL_PHOTO
 
 
-class MainCreator(BaseCreator):
-    page_type: str = "main_market_page"
-    nav_title: str = "Главная"
+class ProductGridCreator(BaseCreator):
+    item_type: str = "product_grid"
 
-    def __init__(
-        self, page_type: str = "main_market_page", nav_title: str = "Главная"
-    ):
-        self.page_type = page_type
-        self.nav_title = nav_title
-
-    async def get_page(
+    async def get_item(
         self,
-        page_json: Dict[str, Any],
-        user_id: Optional[PydanticObjectId] = None,
         context: Optional[Dict[str, Any]] = None,
+        user_id: Optional[PydanticObjectId] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         is_impulsive = context.get("is_impulsive", False) if context else False
+
+        grid_doc = await ui_repo.get_element_by_type(self.item_type)
+        grid_template = json.loads(grid_doc.json_dict)
+
         element_doc = await ui_repo.get_element_by_type("product_card", is_impulsive)
         card_template = json.loads(element_doc.json_dict)
 
@@ -95,27 +92,21 @@ class MainCreator(BaseCreator):
 
                 if element_id == "product_badge_price_layer":
                     item["text"] = f"@{{{price_var}}}"
-
                 elif element_id == "product_image_layer":
                     item["image_url"] = f"@{{{image_var}}}"
-
+                    if "action" in item:
+                        item["action"][
+                            "url"
+                        ] = f"myapp://open_product?item_id=@{{{item_id_var}}}"
                 elif element_id == "product_title_layer":
                     item["text"] = f"@{{{title_var}}}"
-
                 elif element_id == "product_description_layer":
                     item["text"] = f"@{{{description_var}}}"
-
                 elif element_id == "product_buttons_container":
                     if user_id and await content_repo.is_in_user_cart(user_id, c.id):
-                        item["items"] = [
-                            local_already_in_cart_btn,
-                            local_buy_btn,
-                        ]
+                        item["items"] = [local_already_in_cart_btn, local_buy_btn]
                     else:
-                        item["items"] = [
-                            local_cart_btn,
-                            local_buy_btn,
-                        ]
+                        item["items"] = [local_cart_btn, local_buy_btn]
 
             cards_with_data.append(local_card)
 
@@ -123,28 +114,12 @@ class MainCreator(BaseCreator):
             variables.append(
                 {"name": price_var, "type": "string", "value": f"{c.price} ₽"}
             )
-            variables.append(
-                {"name": image_var, "type": "string", "value": LOCAL_PHOTO}
-            )
+            variables.append({"name": image_var, "type": "string", "value": LOCAL_PHOTO})
             variables.append(
                 {"name": description_var, "type": "string", "value": c.descripton}
             )
             variables.append({"name": item_id_var, "type": "string", "value": c_id})
 
-        if page_json.get("id") == "products_grid" or page_json.get("type") == "product_grid":
-            page_json["items"] = cards_with_data
-            return page_json, variables
+        grid_template["items"] = cards_with_data
 
-        grid_found = False
-        for item in page_json["items"]:
-            if item.get("id") == "products_grid":
-                item["items"] = cards_with_data
-                grid_found = True
-                break
-
-        if not grid_found:
-            raise ValueError(
-                "Сетка с id='products_grid' не найдена в шаблоне страницы!"
-            )
-
-        return page_json, variables
+        return grid_template, variables

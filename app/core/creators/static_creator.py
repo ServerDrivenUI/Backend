@@ -8,24 +8,18 @@ from app.core.repository import ui_repo
 
 
 class StaticCreator(BaseCreator):
-    nav_title: str = ""
-
     def __init__(self, type_name: str):
-        self.page_type = type_name
         self.item_type = type_name
 
-    async def get_page(
+    async def get_item(
         self,
-        page_json: Dict[str, Any],
-        user_id: Optional[PydanticObjectId] = None,
         context: Optional[Dict[str, Any]] = None,
+        user_id: Optional[PydanticObjectId] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-        is_impulsive = False
-        if context:
-            is_impulsive = context.get("is_impulsive", False)
+        is_impulsive = context.get("is_impulsive", False) if context else False
 
         doc = await ui_repo.get_element_by_type(self.item_type, is_impulsive)
         if not doc:
-            return page_json, []
+            return context or {}, []
 
         return json.loads(doc.json_dict), []

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import os
 from dotenv import load_dotenv
+from app.shared.extensions import password_context
 
 load_dotenv()
 
@@ -17,11 +18,11 @@ class AuthService:
             user = await auth_repo.get_user(login)
         except Exception as e:
             self.logger.error(f"Ошибка получения данных пользователя: {str(e)}")
-            return None
+            raise Exception(f"Ошибка получения данных пользователя: {str(e)}")
 
         if not user:
             self.logger.warning("Пользователь не найден")
-            return None
+            raise Exception(f"Пользователь не найден")
 
         is_equals = self.check_password(password, user.password_hash)
         if is_equals:
@@ -33,11 +34,7 @@ class AuthService:
 
     def check_password(self, password: str, password_hash: bytes) -> bool:
         """Проверяет совпадение пароля и его хэша"""
-        # TODO: добавить хэш
-        if password == password_hash:
-            return True
-
-        return False
+        return password_context.verify(password, password_hash)
 
     def _create_jwt_token(self, user_id: str) -> str:
         secret_key = os.getenv("JWT_SECRET_KEY")

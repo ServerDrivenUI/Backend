@@ -10,10 +10,20 @@ class PagesService:
         self.logger = logging.getLogger(__name__)
 
     async def get_page(
-        self, page_type: str, user_id: Optional[PydanticObjectId] = None
+        self,
+        page_type: str,
+        user_id: Optional[PydanticObjectId] = None,
+        clothes_item_id: Optional[PydanticObjectId] = None,
     ) -> tuple[dict[str, Any], str]:
         """Выбирает нужную страницу по ее типу из БД"""
-        page_with_data, values = await page_builder.build_page(page_type, user_id)
+        try:
+            page_with_data, values = await page_builder.build_page(
+                page_type, user_id, clothes_item_id
+            )
+        except Exception as e:
+            self.logger.error(f"Ошибка создания страницы: {str(e)}")
+            raise Exception(f"Ошибка создания страницы: {str(e)}")
+
         final_response = {
             "card": {
                 "log_id": f"screen_{page_type}",

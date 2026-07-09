@@ -30,6 +30,9 @@ class ContentRepository:
         )
         return cart is not None
 
+    async def get_clothes_by_id(self, item_id: PydanticObjectId) -> ClothesItem | None:
+        return await ClothesItem.get(item_id)
+
 
 class UIElementsRepository:
     """Работает с нужными шаблонами элементов UI"""

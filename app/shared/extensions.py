@@ -4,11 +4,13 @@ from fastapi.security import HTTPBearer
 from app.shared.config import BaseConfig
 import os
 from dotenv import load_dotenv
+from pwdlib import PasswordHash
 
 load_dotenv()
 
 main_config: BaseConfig = None
 security = HTTPBearer(auto_error=True)
+password_context = PasswordHash.recommended()
 
 
 class DatabaseExtension:

@@ -1,9 +1,12 @@
-from abc import ABC, abstractmethod
+from ..repository import ui_repo, pages_repo
+import json
 from typing import Any, Dict, List, Tuple
-from app.core.creators.base_creator import BaseCreator
 from beanie import PydanticObjectId
 from typing import Optional
 from dataclasses import dataclass
+from app.core.creators.base_creator import BaseCreator
+from app.core.creators import CREATORS_DICT
+from app.shared.dbmodels import User
 
 
 @dataclass(frozen=True)
@@ -16,38 +19,52 @@ class BaseColors:
     BLACK_TEXT_2: str
 
 
-class BasePagesBuilder(ABC):
+class BasePagesBuilder:
     """Собирает нужные страницы по их типу"""
 
-    creators: list[BaseCreator]
-    DESIGN_ID: str = ""
-    COLORS: BaseColors
+    COLORS = BaseColors(
+        PRIMARY="#42b077",
+        DARK="#018a51",
+        WHITE="#f0fff0",
+        BLACK="#121212",
+        BLACK_TEXT_1="#e6121212",
+        BLACK_TEXT_2="#b3121212",
+    )
 
-    def __init__(self, _creators: list[BaseCreator]):
-        self.creators = _creators
-
-    @abstractmethod
     async def build_page(
-        self, page_type: str, user_id: Optional[PydanticObjectId] = None
+        self,
+        page_type: str,
+        user_id: Optional[PydanticObjectId] = None,
+        clothes_item_id: Optional[PydanticObjectId] = None,
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-        pass
+        page = await pages_repo.get_page_by_type(page_type)
+        if not page:
+            raise Exception(f"Страница с типом '{page_type}' не найдена в базе данных")
 
-    @abstractmethod
-    async def _add_navbar(
-        self, nav_title: str, page_type: str, user_id: Optional[PydanticObjectId] = None
-    ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-        pass
+        page_json = json.loads(page.json_dict)
+        user = await User.get(user_id) if user_id else None
+        is_impulsive = user.is_impulsive if user else False
 
-    @abstractmethod
-    async def _add_background(
-        self, page_json: Dict[str, Any], navbar_template: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        pass
+        templates = []
+        variables = []
 
-    def _get_creator(self, page_type: str) -> BaseCreator | None:
-        """Определяет нужный создатель страницы"""
-        for c in self.creators:
-            if c.page_type == page_type:
-                return c
+        items = page_json.get("items", [])
+        for i in items:
+            creator = self._get_creator(i["type"])
+            i["clothes_item_id"] = clothes_item_id
+            i["is_impulsive"] = is_impulsive
+            try:
+                template, vars = await creator.get_item(i, user_id)
+                templates.append(template)
+                variables = variables + vars
+            except Exception as e:
+                raise Exception(f"Ошибка страницы {page_type}: {str(e)}")
 
-        return None
+        page_json["items"] = templates
+
+        return page_json, variables
+
+    def _get_creator(self, item_type: str) -> BaseCreator | None:
+        """Определяет нужный создатель элемента"""
+
+        return CREATORS_DICT.get(item_type)

@@ -15,30 +15,29 @@ from app.shared.dbmodels import UserAction, get_beanie_models
 
 
 class StaticCreatorTests(unittest.IsolatedAsyncioTestCase):
-    async def test_get_page_loads_static_template_with_impulsive_flag(self):
+    async def test_get_item_loads_static_template_with_impulsive_flag(self):
         doc = SimpleNamespace(json_dict=json.dumps({"id": "hero", "type": "container"}))
 
         with patch(
             "app.core.creators.static_creator.ui_repo.get_element_by_type",
             new=AsyncMock(return_value=doc),
         ) as get_element:
-            result, variables = await StaticCreator("hero_banner").get_page(
-                {"type": "hero_banner"},
-                context={"is_impulsive": True},
+            result, variables = await StaticCreator("hero_banner").get_item(
+                context={"type": "hero_banner", "is_impulsive": True},
             )
 
         self.assertEqual(result, {"id": "hero", "type": "container"})
         self.assertEqual(variables, [])
         get_element.assert_awaited_once_with("hero_banner", True)
 
-    async def test_get_page_returns_placeholder_when_template_missing(self):
+    async def test_get_item_returns_placeholder_when_template_missing(self):
         placeholder = {"type": "footer"}
 
         with patch(
             "app.core.creators.static_creator.ui_repo.get_element_by_type",
             new=AsyncMock(return_value=None),
         ):
-            result, variables = await StaticCreator("footer").get_page(placeholder)
+            result, variables = await StaticCreator("footer").get_item(placeholder)
 
         self.assertIs(result, placeholder)
         self.assertEqual(variables, [])
