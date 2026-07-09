@@ -16,7 +16,7 @@ class AuthCreator(BaseCreator):
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         auth_form_doc = await ui_repo.get_element_by_type(self.item_type)
         if not auth_form_doc:
-            print("Элемент 'navbar' не найден в базе данных!")
+            raise Exception(f"Элемент {self.item_type} не найден в базе данных!")
 
         auth_template = json.loads(auth_form_doc.json_dict)
 

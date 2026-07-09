@@ -17,11 +17,11 @@ class AuthService:
             user = await auth_repo.get_user(login)
         except Exception as e:
             self.logger.error(f"Ошибка получения данных пользователя: {str(e)}")
-            return None
+            raise Exception(f"Ошибка получения данных пользователя: {str(e)}")
 
         if not user:
             self.logger.warning("Пользователь не найден")
-            return None
+            raise Exception(f"Пользователь не найден")
 
         is_equals = self.check_password(password, user.password_hash)
         if is_equals:

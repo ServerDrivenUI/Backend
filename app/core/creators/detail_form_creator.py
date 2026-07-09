@@ -17,8 +17,7 @@ class DetailFormCreator(BaseCreator):
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         detail_form_doc = await ui_repo.get_element_by_type(self.item_type)
         if not detail_form_doc:
-            print(f"Элемент '{self.item_type}' не найден в базе данных!")
-            return {}, []
+            raise Exception(f"Элемент '{self.item_type}' не найден в базе данных!")
 
         detail_template = json.loads(detail_form_doc.json_dict)
 

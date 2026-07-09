@@ -17,8 +17,7 @@ class ProductDescriptionCreator(BaseCreator):
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         description_doc = await ui_repo.get_element_by_type(self.item_type)
         if not description_doc:
-            print(f"Элемент '{self.item_type}' не найден в базе данных!")
-            return {}, []
+            raise(f"Элемент '{self.item_type}' не найден в базе данных!")
 
         description_template = json.loads(description_doc.json_dict)
 

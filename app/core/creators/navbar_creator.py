@@ -20,7 +20,7 @@ class NavbarCreator(BaseCreator):
     ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
         navbar_doc = await ui_repo.get_element_by_type(self.item_type)
         if not navbar_doc:
-            print("Элемент 'navbar' не найден в базе данных!")
+            raise Exception(f"Элемент {self.item_type} не найден в базе данных!")
 
         navbar_template = json.loads(navbar_doc.json_dict)
 
