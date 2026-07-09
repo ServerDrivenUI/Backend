@@ -15,5 +15,15 @@ class OrderService:
             self.logger.error(e)
             return False
 
+    async def create_one_order(
+        self, user_id: PydanticObjectId, clothes_item_id: PydanticObjectId
+    ) -> bool:
+        try:
+            await order_repo.create_one_order(user_id, clothes_item_id)
+            return True
+        except Exception as e:
+            self.logger.error(e)
+            return False
+
 
 order_service = OrderService()
