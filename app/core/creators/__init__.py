@@ -13,6 +13,7 @@ from .footer_creator import FooterCreator
 from .product_card_creator import ProductCardCreator
 from .content_creator import ContentCreator
 from .cart_summary_creator import CartSummaryCreator
+from .cart_item_creator import CartItemCreator
 
 CREATORS_DICT = {
     NavbarCreator.item_type: NavbarCreator(),
@@ -30,4 +31,5 @@ CREATORS_DICT = {
     ProductCardCreator.item_type: ProductCardCreator(),
     ContentCreator.item_type: ContentCreator(),
     CartSummaryCreator.item_type: CartSummaryCreator(),
+    CartItemCreator.item_type: CartItemCreator(),
 }

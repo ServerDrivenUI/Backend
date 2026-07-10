@@ -5,6 +5,7 @@ from .base_creator import BaseCreator
 from app.core.repository import ui_repo, content_repo
 from app.shared.consts import LOCAL_PHOTO
 from .new_product_card_creator import ProductCardCreator
+from .cart_item_creator import CartItemCreator
 
 
 class ContentCreator(BaseCreator):
@@ -28,6 +29,11 @@ class ContentCreator(BaseCreator):
 
         if elements == "new_product_card":
             items, vars = await self._add_products()
+
+            content_template["items"] = items
+            variables = variables + vars
+        elif elements == "new_cart_item":
+            items, vars = await self._add_carts(user_id)
 
             content_template["items"] = items
             variables = variables + vars
@@ -58,7 +64,36 @@ class ContentCreator(BaseCreator):
                 variables = variables + vars
             except Exception as e:
                 raise Exception(
-                    f"Ошибка создания элементов в {self.item_type}, элемент {c_id}"
+                    f"Ошибка создания элементов в {self.item_type}, элемент {c_id}: {str(e)}"
+                )
+
+        return items, variables
+
+    async def _add_carts(self, user_id):
+        creator: BaseCreator = CartItemCreator()
+
+        cart_items = await content_repo.get_user_cart(user_id)
+
+        items = []
+        variables = []
+
+        for c in cart_items:
+            c_id = str(c.id)
+            context = {
+                "cart_image": LOCAL_PHOTO,
+                "name": c.name,
+                "description": c.descripton,
+                "price": c.price,
+                "id": c_id,
+            }
+
+            try:
+                item, vars = await creator.get_item(context)
+                items.append(item)
+                variables = variables + vars
+            except Exception as e:
+                raise Exception(
+                    f"Ошибка создания элементов в {self.item_type}, элемент {c_id}: {str(e)}"
                 )
 
         return items, variables
