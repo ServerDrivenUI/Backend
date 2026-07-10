@@ -49,6 +49,17 @@ class NewNavbarCreator(BaseCreator):
                         }
                     )
 
+                elif sub_item.get("id") == "navbar_cart_icon":
+                    sub_item["image_url"] = "@{cart_icon}"
+                    cart_icon_var = "cart_icon"
+                    variables.append(
+                        {
+                            "name": cart_icon_var,
+                            "type": "string",
+                            "value": Icons.CART,
+                        }
+                    )
+
                 elif sub_item.get("type") == "container":
                     for cart_item in sub_item.get("items", []):
                         if cart_item.get("id") == "navbar_cart_icon":

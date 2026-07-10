@@ -41,9 +41,6 @@ graph TD
         Features --> GenData[📂 generate_data/]:::module
         Features --> Pages[📂 pages/]:::module
 
-        F_Structure -->|"page_type"| Core
-        Core -->|"json"| F_Structure
-
         F_Structure["📄 requests.py<br>📄 routes.py<br>📄 service.py<br>📄 repository.py<br>📄 response.py"]:::file
 
         Auth --> F_Structure
