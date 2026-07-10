@@ -7,6 +7,5 @@ generate_route = APIRouter(tags=["generate"])
 
 @generate_route.get("/generate")
 async def generate_endpoint():
-    await genearate_service.generate_users(3)
-    await genearate_service.generate_clothes(5)
+    await genearate_service.generate_users(1)
     return ApiResponse(data="Генерация произошла")

@@ -5,6 +5,11 @@ from .cart_container_creator import CartContainerCreator
 from .order_btn_creator import OrderBtnCreator
 from .detail_form_creator import DetailFormCreator
 from .product_description_layer_creator import ProductDescriptionCreator
+from .new_navbar_creator import NewNavbarCreator
+from .promo_strip import PromoStripCreator
+from .banner import BannerCreator
+from .link_creator import LinkCreator
+from .footer_creator import FooterCreator
 
 CREATORS_DICT = {
     NavbarCreator.item_type: NavbarCreator(),
@@ -14,4 +19,9 @@ CREATORS_DICT = {
     OrderBtnCreator.item_type: OrderBtnCreator(),
     DetailFormCreator.item_type: DetailFormCreator(),
     ProductDescriptionCreator.item_type: ProductDescriptionCreator(),
+    NewNavbarCreator.item_type: NewNavbarCreator(),
+    PromoStripCreator.item_type: PromoStripCreator(),
+    BannerCreator.item_type: BannerCreator(),
+    LinkCreator.item_type: LinkCreator(),
+    FooterCreator.item_type: FooterCreator(),
 }

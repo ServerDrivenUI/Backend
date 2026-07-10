@@ -7,12 +7,12 @@ class AuthRequest(BaseModel):
     login: str = Field(
         ...,
         min_length=1,
-        examples=["gobrien@example.net"],
+        examples=["panfilovaakulina@example.com"],
         description="Логин пользователя",
     )
     """Логин пользователя"""
 
     password: str = Field(
-        ..., min_length=1, examples=["5S&aL(wg+G"], description="Пароль"
+        ..., min_length=1, examples=["76GTYXk8@K"], description="Пароль"
     )
     """Пароль"""

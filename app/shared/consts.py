@@ -29,6 +29,8 @@ SDUI_TEMPLATES = {
 class Icons(StrEnum):
     HOME: str = "http://localhost:5200/assets/house-solid-full.svg"
     CART: str = "http://localhost:5200/assets/basket-shopping-solid-full.svg"
+    SEARCH: str = "http://localhost:5200/assets/magnifying-glass-solid-full.svg"
+    MENU: str = "http://localhost:5200/assets/bars-solid-full.svg"
 
 
 LOCAL_PHOTO = "http://localhost:5200/assets/clothes.jpg"

@@ -16,13 +16,13 @@ class GenerateService:
     async def generate_users(self, count: int):
         """Генерирует пользователей"""
         for i in range(count):
+            password = self.faker.password()
             user_dto = UserDTO(
                 login=self.faker.email(),
-                password_hash=self._generate_password_hash(
-                    self.faker.password()
-                ),
+                password_hash=self._generate_password_hash(password),
                 is_impulsive=True,
             )
+            print(f"{user_dto.login} {password}")
             try:
                 await generate_repo.add_user(user_dto)
             except Exception as e:
