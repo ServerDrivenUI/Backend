@@ -1,28 +1,26 @@
 from enum import StrEnum
 
 SDUI_TEMPLATES = {
-    "templates": {
-        "_template_close": {
-            "accessibility": {
-                "description": "Закрыть",
-                "mode": "merge",
-                "type": "button",
-            },
-            "actions": [{"log_id": "close_popup", "url": "div-screen://close"}],
-            "image_url": "https://yastatic.net/s3/home/div/div_fullscreens/cross2.3.png",
-            "tint_color": "#73000000",
-            "type": "image",
+    "_template_close": {
+        "accessibility": {
+            "description": "Закрыть",
+            "mode": "merge",
+            "type": "button",
         },
-        "_template_button": {
-            "type": "text",
-            "$actions": "actions",
-            "text_alignment_horizontal": "center",
-            "text_alignment_vertical": "center",
-            "border": {"$corner_radius": "corners"},
-            "paddings": {"bottom": 24, "left": 28, "right": 28, "top": 22},
-            "width": {"type": "wrap_content"},
-        },
-    }
+        "actions": [{"log_id": "close_popup", "url": "div-screen://close"}],
+        "image_url": "https://yastatic.net/s3/home/div/div_fullscreens/cross2.3.png",
+        "tint_color": "#73000000",
+        "type": "image",
+    },
+    "_template_button": {
+        "type": "text",
+        "$actions": "actions",
+        "text_alignment_horizontal": "center",
+        "text_alignment_vertical": "center",
+        "border": {"$corner_radius": "corners"},
+        "paddings": {"bottom": 24, "left": 28, "right": 28, "top": 22},
+        "width": {"type": "wrap_content"},
+    },
 }
 
 
