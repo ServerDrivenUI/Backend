@@ -4,7 +4,7 @@ from beanie import PydanticObjectId
 from .base_creator import BaseCreator
 from app.core.repository import ui_repo, content_repo
 from app.shared.consts import LOCAL_PHOTO
-from .new_product_card_creator import ProductCardCreator
+from .small_product_card import SmallProductCardCreator
 from .cart_item_creator import CartItemCreator
 
 
@@ -27,7 +27,7 @@ class ContentCreator(BaseCreator):
 
         elements = context.get("elements", "")
 
-        if elements == "new_product_card":
+        if elements == "small_product_card":
             items, vars = await self._add_products()
 
             content_template["items"] = items
@@ -41,7 +41,7 @@ class ContentCreator(BaseCreator):
         return content_template, variables
 
     async def _add_products(self):
-        creator: BaseCreator = ProductCardCreator()
+        creator: BaseCreator = SmallProductCardCreator()
 
         clothes = await content_repo.get_all_clothes()
 

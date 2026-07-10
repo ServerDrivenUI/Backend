@@ -2,7 +2,8 @@ import json
 from typing import Dict, Any, List, Tuple, Optional
 from beanie import PydanticObjectId
 from .base_creator import BaseCreator
-from app.core.repository import ui_repo
+from app.core.repository import ui_repo, content_repo
+from app.shared.consts import LOCAL_PHOTO
 
 
 class ProductCardCreator(BaseCreator):
@@ -22,12 +23,24 @@ class ProductCardCreator(BaseCreator):
         card_template = json.loads(card_doc.json_dict)
         variables: List[Dict[str, Any]] = []
 
-        product_img = context.get("product_img", "")
-        product_name = context.get("product_name", "")
-        product_description = context.get("product_description", "")
-        price = context.get("product_price", "")
-        old_price = context.get("product_price", "")
+        clothes_id = context.get("clothes_item_id")
+        clothes = await content_repo.get_clothes_by_id(clothes_id)
+
+        product_img = LOCAL_PHOTO
+        product_name = clothes.name
+        product_description = clothes.descripton
+        price = clothes.price
+        old_price = clothes.price
         product_id = context.get("id", "1")
+
+        item_id_var = f"item_id_{product_id}"
+        variables.append(
+            {
+                "name": item_id_var,
+                "type": "string",
+                "value": str(clothes_id),
+            }
+        )
 
         def process_items(items: List[Dict[str, Any]]):
             for item in items:
@@ -88,9 +101,27 @@ class ProductCardCreator(BaseCreator):
                         }
                     )
 
+                variables.append(
+                    {"type": "string", "name": "selected_size", "value": "M"}
+                )
+                variables.append({"type": "integer", "name": "quantity", "value": 1})
+
+                if "action" in item and "url" in item["action"]:
+                    item["action"]["url"] = item["action"]["url"].replace(
+                        "@{item_id}", f"@{{{item_id_var}}}"
+                    )
+
                 if "items" in item:
                     process_items(item["items"])
 
+        if "action" in card_template and "url" in card_template["action"]:
+            card_template["action"]["url"] = card_template["action"]["url"].replace(
+                "@{item_id}", f"@{{{item_id_var}}}"
+            )
+
         process_items(card_template.get("items", []))
+
+        variables.append({"type": "string", "name": "selected_size", "value": "M"})
+        variables.append({"type": "integer", "name": "quantity", "value": 1})
 
         return card_template, variables

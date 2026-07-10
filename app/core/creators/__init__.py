@@ -14,6 +14,8 @@ from .product_card_creator import ProductCardCreator
 from .content_creator import ContentCreator
 from .cart_summary_creator import CartSummaryCreator
 from .cart_item_creator import CartItemCreator
+from .small_product_card import SmallProductCardCreator
+from .new_product_card_creator import ProductCardCreator
 
 CREATORS_DICT = {
     NavbarCreator.item_type: NavbarCreator(),
@@ -32,4 +34,6 @@ CREATORS_DICT = {
     ContentCreator.item_type: ContentCreator(),
     CartSummaryCreator.item_type: CartSummaryCreator(),
     CartItemCreator.item_type: CartItemCreator(),
+    SmallProductCardCreator.item_type: SmallProductCardCreator(),
+    ProductCardCreator.item_type: ProductCardCreator(),
 }

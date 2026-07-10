@@ -53,4 +53,10 @@ class CartSummaryCreator(BaseCreator):
                             }
                         )
 
+            if item.get("type") == "text" and item.get("text") == "ОФОРМИТЬ ЗАКАЗ":
+                item["action"] = {
+                    "log_id": "checkout_click",
+                    "url": "myapp://create_order",
+                }
+
         return summary_template, variables

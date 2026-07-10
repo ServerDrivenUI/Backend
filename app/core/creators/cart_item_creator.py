@@ -28,6 +28,15 @@ class CartItemCreator(BaseCreator):
         price = context.get("price", "")
         product_id = str(context.get("id", "1"))
 
+        item_id_var = f"item_id_{product_id}"
+        variables.append(
+            {
+                "name": item_id_var,
+                "type": "string",
+                "value": product_id,
+            }
+        )
+
         def process_items(items: List[Dict[str, Any]]):
             for item in items:
                 item_id = item.get("id", "")
@@ -35,41 +44,59 @@ class CartItemCreator(BaseCreator):
                 if item_id == "cart_image":
                     img_var = f"cart_image_{product_id}"
                     item["image_url"] = f"@{{{img_var}}}"
-                    variables.append({
-                        "name": img_var,
-                        "type": "string",
-                        "value": cart_image,
-                    })
+                    variables.append(
+                        {
+                            "name": img_var,
+                            "type": "string",
+                            "value": cart_image,
+                        }
+                    )
 
                 elif item_id == "name":
                     name_var = f"cart_name_{product_id}"
                     item["text"] = f"@{{{name_var}}}"
-                    variables.append({
-                        "name": name_var,
-                        "type": "string",
-                        "value": name,
-                    })
+                    variables.append(
+                        {
+                            "name": name_var,
+                            "type": "string",
+                            "value": name,
+                        }
+                    )
 
                 elif item_id == "description":
                     desc_var = f"cart_description_{product_id}"
                     item["text"] = f"@{{{desc_var}}}"
-                    variables.append({
-                        "name": desc_var,
-                        "type": "string",
-                        "value": description,
-                    })
+                    variables.append(
+                        {
+                            "name": desc_var,
+                            "type": "string",
+                            "value": description,
+                        }
+                    )
 
                 elif item_id == "cart_price":
                     price_var = f"cart_price_{product_id}"
                     item["text"] = f"@{{{price_var}}}"
-                    variables.append({
-                        "name": price_var,
-                        "type": "string",
-                        "value": price,
-                    })
+                    variables.append(
+                        {
+                            "name": price_var,
+                            "type": "string",
+                            "value": price,
+                        }
+                    )
+
+                if "action" in item and "url" in item["action"]:
+                    item["action"]["url"] = item["action"]["url"].replace(
+                        "@{item_id}", f"@{{{item_id_var}}}"
+                    )
 
                 if "items" in item:
                     process_items(item["items"])
+
+        if "action" in item_template and "url" in item_template["action"]:
+            item_template["action"]["url"] = item_template["action"]["url"].replace(
+                "@{item_id}", f"@{{{item_id_var}}}"
+            )
 
         process_items(item_template.get("items", []))
 
